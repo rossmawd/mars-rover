@@ -2,25 +2,70 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+
+
+class App extends React.Component {
+  state = {
+    sizeOfPlateau: null,
+    numberOfRovers: null,
+    roversStartCoords: [],
+    movementInstructions: ""
+  }
+
+  handleFormChange = (e) => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  }
+
+  handleSubmit = () => {
+    console.log(this.inputVerification())
+    if (this.inputVerification()) {
+
+    } else {
+
+      alert("invalid input")
+    }
+  }
+
+  inputVerification = () => {
+    return null
+  }
+
+
+
+  render() {
+    return (
+      <div className="App">
+        <label for="coords" align="right">Coordinates of right hand corner of plateau: </label>
+        <input
+          type="text"
+          id="coords"
+          name="sizeOfPlateau"
+          placeholder="e.g: 5,5"
+          align="right"
+          onChange={this.handleFormChange}
+          value={this.state.sizeOfPlateau}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+        </input>
+
+        <br />
+        <label for="rovers" align="right">Number of Rovers: </label>
+        <input
+          type="text"
+          id="rovers"
+          name="numberOfRovers"
+          align="right"
+          placeholder="e.g: 2"
+          onChange={this.handleFormChange}
+          value={this.state.numberOfRovers}
+        >
+        </input>
+        <br />
+        <button onClick={this.handleSubmit}>Submit</button>
+      </div >
+    );
+  }
 }
 
 export default App;
