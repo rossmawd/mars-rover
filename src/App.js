@@ -1,10 +1,12 @@
 import React from 'react';
 import './App.css';
+import API from './API.js'
 
 class App extends React.Component {
   state = {
-    upperRightXcoord: null,
-    upperRightYcoord: null,
+    // upperRightXcoord: null,
+    // upperRightYcoord: null,
+    upperRightCoords: null,
     numberOfRovers: null,
     roversStartCoords: null,
     movementInstructions: "",
@@ -18,35 +20,45 @@ class App extends React.Component {
   }
 
   handleSubmit = () => {
-
-    if (this.inputVerification()) {
-      console.log("you entered correctly")
-    } else {
-      console.log("doing nothing")
-
+    let inputArray = this.state.upperRightXcoord.split('\n')
+    inputArray = inputArray.filter(line => line !== "")
+    if (this.splitInputs(inputArray)) {
+      console.log("Inputs Sucessfully Processed!")
     }
   }
 
-  inputVerification = () => {
-    let { upperRightXcoord, upperRightYcoord, numberOfRovers } = this.state
-    let isNumber = RegExp(/^([0-9])*$/)
+  splitInputs = (inputs) => {
+    if (inputs.length % 2 === 0) {
+      alert("Even number of Input lines detected, please check format guidelines!")
+      return false
+    }
+    console.log(inputs)
+    this.validateAndProcessFirstLine(inputs)
 
-    if (isNumber.test(upperRightXcoord + upperRightYcoord + numberOfRovers)) {
-      return true
+  }
+
+  validateAndProcessFirstLine = (inputs) => {
+    let upperRightCoords = inputs.shift().split(' ')
+
+    if ((upperRightCoords.length === 2) && (API.numeralTest(upperRightCoords))) {
+      this.setState({
+        upperRightCoords: API.convertStringsArrayToIntegers(upperRightCoords)
+      },
+        () => console.log("the upper Right Co-ords: ", this.state.upperRightCoords))
     } else {
-      console.log(upperRightXcoord)
-      alert(`Please make sure you only enter numerals!`)
+      console.log("The first input line is incorrect (upper Right Co-ords)")
       return false
     }
   }
 
 
 
+
   render() {
     return (
       <div className="App">
-        <label for="Xcoord" align="right">X Coordinnate of upper right hand corner of plateau: </label>
-        <input
+        <label for="Xcoord" align="right">Enter Test input: </label>
+        <textarea
           type="text"
           id="Xcoord"
           name="upperRightXcoord"
@@ -55,9 +67,9 @@ class App extends React.Component {
           onChange={this.handleFormChange}
           value={this.state.upperRightXcoord}
         >
-        </input>
+        </textarea>
         <br />
-        <label for="Ycoord" align="right">Y Coordinnate of upper right hand corner of plateau: </label>
+        {/* <label for="Ycoord" align="right">Y Coordinnate of upper right hand corner of plateau: </label>
         <input
           type="text"
           id="Ycoord"
@@ -67,10 +79,10 @@ class App extends React.Component {
           onChange={this.handleFormChange}
           value={this.state.upperRightYcoord}
         >
-        </input>
+        </input> */}
 
         <br />
-        <label for="rovers" align="right">Number of Rovers: </label>
+        {/* <label for="rovers" align="right">Number of Rovers: </label>
         <input
           type="text"
           id="rovers"
@@ -80,7 +92,7 @@ class App extends React.Component {
           onChange={this.handleFormChange}
           value={this.state.numberOfRovers}
         >
-        </input>
+        </input> */}
         <br />
         <button onClick={this.handleSubmit}>Submit</button>
       </div >
