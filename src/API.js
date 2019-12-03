@@ -10,4 +10,7 @@ const numeralTest = (arrayOfStrings) => {
 }
 
 
-export default { convertStringsArrayToIntegers, numeralTest }
+export default {
+  convertStringsArrayToIntegers,
+  numeralTest
+}

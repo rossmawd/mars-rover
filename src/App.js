@@ -4,8 +4,6 @@ import API from './API.js'
 
 class App extends React.Component {
   state = {
-    // upperRightXcoord: null,
-    // upperRightYcoord: null,
     upperRightCoords: null,
     numberOfRovers: null,
     roversStartCoords: null,
@@ -19,7 +17,7 @@ class App extends React.Component {
     });
   }
 
-  handleSubmit = () => {
+  handleInputSubmit = () => {
     let inputArray = this.state.upperRightXcoord.split('\n')
     inputArray = inputArray.filter(line => line !== "")
     if (this.splitInputs(inputArray)) {
@@ -50,8 +48,6 @@ class App extends React.Component {
       return false
     }
   }
-
-
 
 
   render() {
@@ -94,7 +90,7 @@ class App extends React.Component {
         >
         </input> */}
         <br />
-        <button onClick={this.handleSubmit}>Submit</button>
+        <button onClick={this.handleInputSubmit}>Submit</button>
       </div >
     );
   }
