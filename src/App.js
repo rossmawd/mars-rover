@@ -3,10 +3,12 @@ import './App.css';
 
 class App extends React.Component {
   state = {
-    sizeOfPlateau: null,
+    upperRightXcoord: null,
+    upperRightYcoord: null,
     numberOfRovers: null,
-    roversStartCoords: [],
-    movementInstructions: ""
+    roversStartCoords: null,
+    movementInstructions: "",
+    testInput: ""
   }
 
   handleFormChange = (e) => {
@@ -16,17 +18,26 @@ class App extends React.Component {
   }
 
   handleSubmit = () => {
-    console.log(this.inputVerification())
+
     if (this.inputVerification()) {
-
+      console.log("you entered correctly")
     } else {
+      console.log("doing nothing")
 
-      alert("invalid input")
     }
   }
 
   inputVerification = () => {
-    return null
+    let { upperRightXcoord, upperRightYcoord, numberOfRovers } = this.state
+    let isNumber = RegExp(/^([0-9])*$/)
+
+    if (isNumber.test(upperRightXcoord + upperRightYcoord + numberOfRovers)) {
+      return true
+    } else {
+      console.log(upperRightXcoord)
+      alert(`Please make sure you only enter numerals!`)
+      return false
+    }
   }
 
 
@@ -34,15 +45,27 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <label for="coords" align="right">Coordinates of right hand corner of plateau: </label>
+        <label for="Xcoord" align="right">X Coordinnate of upper right hand corner of plateau: </label>
         <input
           type="text"
-          id="coords"
-          name="sizeOfPlateau"
-          placeholder="e.g: 5,5"
+          id="Xcoord"
+          name="upperRightXcoord"
+          placeholder="e.g: 5"
           align="right"
           onChange={this.handleFormChange}
-          value={this.state.sizeOfPlateau}
+          value={this.state.upperRightXcoord}
+        >
+        </input>
+        <br />
+        <label for="Ycoord" align="right">Y Coordinnate of upper right hand corner of plateau: </label>
+        <input
+          type="text"
+          id="Ycoord"
+          name="upperRightYcoord"
+          placeholder="e.g: 5"
+          align="right"
+          onChange={this.handleFormChange}
+          value={this.state.upperRightYcoord}
         >
         </input>
 
