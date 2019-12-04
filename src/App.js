@@ -8,7 +8,8 @@ class App extends React.Component {
     numberOfRovers: null,
     roversStartCoords: null,
     movementInstructions: "",
-    testInput: ""
+    testInput: "",
+    plateauArray: []
   }
 
   handleFormChange = (e) => {
@@ -20,29 +21,67 @@ class App extends React.Component {
   handleInputSubmit = () => {
     let inputArray = this.state.upperRightXcoord.split('\n')
     inputArray = inputArray.filter(line => line !== "")
-    if (this.splitInputs(inputArray)) {
+    if (this.processInputs(inputArray)) {
       console.log("Inputs Sucessfully Processed!")
     }
   }
 
-  splitInputs = (inputs) => {
+  processInputs = (inputs) => {
     if (inputs.length % 2 === 0) {
       alert("Even number of Input lines detected, please check format guidelines!")
       return false
-    }
-    console.log(inputs)
-    this.validateAndProcessFirstLine(inputs)
+    } else {
+      console.log(inputs)
+      let upperRightCoords = inputs.shift().split(' ')
+      this.validateAndProcessFirstLine(upperRightCoords)
 
+      this.splitRoverData(inputs)
+    }
   }
 
-  validateAndProcessFirstLine = (inputs) => {
-    let upperRightCoords = inputs.shift().split(' ')
+  createPlateau = () => {
+    let plateau = []
+    let columns = this.state.upperRightCoords[1]
+    let rows = this.state.upperRightCoords[0]
+    for (let i = 0; i < columns; i++) {
+      plateau[i] = []
+      for (let j = 0; j < rows; j++) {
+        plateau[i][j] = 0
+      }
+    }
+    this.setState({ plateauArray: plateau })
+    console.log("here is the plateau", plateau)
+  }
+
+  splitRoverData = (inputs) => {
+    let indexedRoverData = []
+    //put each rover's data into its own array inside an array
+    let i = 0
+    let j = 0
+
+    do {
+      indexedRoverData[j] = [inputs[i], inputs[i + 1]]
+      i = i + 2
+      j++
+    } while (i !== (inputs.length))
+    console.log("the indexed rover data is", indexedRoverData)
+
+    console.log("Number of rovers", indexedRoverData.length)
+  }
+
+  // checks the first input line is 2 integers seperated by a space
+  // and saves them into the upperRightCoords state as an array
+  validateAndProcessFirstLine = (upperRightCoords) => {
+    // let upperRightCoords = inputs.shift().split(' ')
 
     if ((upperRightCoords.length === 2) && (API.numeralTest(upperRightCoords))) {
       this.setState({
         upperRightCoords: API.convertStringsArrayToIntegers(upperRightCoords)
       },
-        () => console.log("the upper Right Co-ords: ", this.state.upperRightCoords))
+        () => {
+          this.createPlateau()
+          console.log("the upper Right Co-ords: ", this.state.upperRightCoords)
+        })
     } else {
       console.log("The first input line is incorrect (upper Right Co-ords)")
       return false

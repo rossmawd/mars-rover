@@ -11,10 +11,19 @@ import App from './App';
 
 
 describe('App component', () => {
-  it('starts with a count of 0', () => {
+  it('displays the correct instructions', () => {
     const wrapper = shallow(<App />);
     const text = wrapper.find('label').text();
     expect(text).toEqual('Enter Test input: ');
   });
+
+  it('decrements count by 1 when the decrement button is clicked', () => {
+    const wrapper = shallow(<App />);
+    const decrementBtn = wrapper.find('button.decrement');
+    decrementBtn.simulate('click');
+    const text = wrapper.find('p').text();
+    expect(text).toEqual('Count: -1');
+  });
+
 });
 
