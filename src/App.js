@@ -5,11 +5,9 @@ import API from './API.js'
 class App extends React.Component {
   state = {
     upperRightCoords: null,
-    numberOfRovers: null,
     roversPositions: null,
     roversInstructions: null,
     formattedOutput: null
-
   }
 
   handleFormChange = (e) => {
@@ -21,53 +19,9 @@ class App extends React.Component {
   handleInputSubmit = () => {
     let inputArray = this.state.upperRightXcoord.split('\n')
     inputArray = inputArray.filter(line => line !== "")
-    if (this.processInputs(inputArray)) {
-      console.log("Inputs Sucessfully Processed!")
-      // this.calculateRoverEndpoints()
-    }
+    this.processInputs(inputArray)
+    this.setState({ formatOutput: null })
   }
-
-  calculateRoverEndpoints = () => {
-    let roversInstructions = [...this.state.roversInstructions]
-    let roversPositions = [...this.state.roversPositions]
-    console.log("calculating endpoint:")
-    // console.log("coords:", roversPositions, "instructions:", roversInstructions)
-
-    roversInstructions.forEach((instructionSet, index) => {
-      let newPosition = this.driveRover(instructionSet, index)
-      roversPositions[index] = newPosition
-    })
-    this.setState(
-      { roversPositions: roversPositions },
-      () => this.formatOutput(roversPositions))
-  }
-
-  formatOutput = (roversPositions) => {
-
-    let formattedOutput = ""
-    if (roversPositions) {
-      formattedOutput = roversPositions.map(roverPosition => roverPosition.join(" "))
-      formattedOutput = formattedOutput.join("\n")
-      console.log(formattedOutput)
-    }
-    this.setState({ formattedOutput: formattedOutput })
-  }
-
-  driveRover = (instructions, roverIndex) => {
-    let roverPosition = [...this.state.roversPositions[roverIndex]]
-
-    let plateauSize = [...this.state.upperRightCoords]
-    instructions.forEach(move => {
-      if (move === "L" || move === "R") {
-        roverPosition[2] = API.turnRover(move, roverPosition)
-      } else if (move === "M") {
-        roverPosition = API.moveRover(roverPosition[2], roverPosition, plateauSize, roverIndex)
-      }
-    })
-    return roverPosition
-  }
-
-
 
   processInputs = (inputs) => {
     if (inputs.length % 2 === 0) {
@@ -76,15 +30,54 @@ class App extends React.Component {
     } else {
       console.log(inputs)
       let upperRightCoords = inputs.shift().split(' ')
+
       this.validateAndProcessFirstLine(upperRightCoords)
-
       let roverData = this.splitRoverData(inputs)
-
       this.saveRoverDataToState(roverData)
+
       return roverData
     }
   }
 
+  // checks the first input line is 2 integers seperated by a space
+  // and saves them into the upperRightCoords state as an array
+  validateAndProcessFirstLine = (upperRightCoords) => {
+    if ((upperRightCoords.length === 2) && (API.numeralTest(upperRightCoords))) {
+      this.setState({
+        upperRightCoords: API.convertStringsArrayToIntegers(upperRightCoords)
+      },
+        () => {
+          console.log("the upper Right Co-ords: ", this.state.upperRightCoords)
+        }
+      )
+    } else {
+      alert("The first input line is incorrect (upper Right Co-ords)")
+      return false
+    }
+  }
+
+  //splits up the rovers starting point and instructions into arrays
+  splitRoverData = (inputs) => {
+    let indexedRoverData = []
+    //put each rover's data into its own array inside an array
+    let i = 0
+    let j = 0
+    do {
+      indexedRoverData[j] = [inputs[i], inputs[i + 1]]
+      i = i + 2
+      j++
+    } while (i !== (inputs.length))
+
+    //put each character string into its own array element
+    indexedRoverData = indexedRoverData.map(roverArray => {
+      return roverArray.map(string => string.replace(/ /g, '').split(''))
+    })
+    console.log("the indexed rover data is", indexedRoverData)
+    // final array form: [ [[1,2,N],[L,M,R,M]] , [[2,3,S],[L,M,L,M]] ]
+    return indexedRoverData
+  }
+
+  //saves roverPositions & roverIntructions into seperate state key/value pairs
   saveRoverDataToState = (roverData) => {
     let [roversPositions, roversInstructions] = [[], []]
 
@@ -110,53 +103,54 @@ class App extends React.Component {
     )
   }
 
+  //with the help of driveRover, calculates the final positions of each rover
+  //and saves them into the roversPositions state
+  calculateRoverEndpoints = () => {
+    let roversInstructions = [...this.state.roversInstructions]
+    let roversPositions = [...this.state.roversPositions]
+    console.log("calculating endpoint:")
 
-
-  splitRoverData = (inputs) => {
-    let indexedRoverData = []
-    //put each rover's data into its own array inside an array
-    let i = 0
-    let j = 0
-    do {
-      indexedRoverData[j] = [inputs[i], inputs[i + 1]]
-      i = i + 2
-      j++
-    } while (i !== (inputs.length))
-    //put each character string into its own array element
-    indexedRoverData = indexedRoverData.map(roverArray => {
-      return roverArray.map(string => string.replace(/ /g, '').split(''))
+    roversInstructions.forEach((instructionSet, index) => {
+      let newPosition = this.driveRover(instructionSet, index)
+      roversPositions[index] = newPosition
     })
-    console.log("the indexed rover data is", indexedRoverData)
-    // final array form: [ [[1,2,N],[L,M,R,M]] , [[2,3,S],[L,M,L,M]] ]
-    console.log("Number of rovers", indexedRoverData.length)
-    return indexedRoverData
+    this.setState(
+      { roversPositions: roversPositions },
+      () => this.formatOutput(roversPositions)
+    )
   }
 
-  // checks the first input line is 2 integers seperated by a space
-  // and saves them into the upperRightCoords state as an array
-  validateAndProcessFirstLine = (upperRightCoords) => {
-    // let upperRightCoords = inputs.shift().split(' ')
+  driveRover = (instructions, roverIndex) => {
+    let roverPosition = [...this.state.roversPositions[roverIndex]]
 
-    if ((upperRightCoords.length === 2) && (API.numeralTest(upperRightCoords))) {
-      this.setState({
-        upperRightCoords: API.convertStringsArrayToIntegers(upperRightCoords)
-      },
-        () => {
-          // this.createPlateau()
-          console.log("the upper Right Co-ords: ", this.state.upperRightCoords)
-        })
-    } else {
-      console.log("The first input line is incorrect (upper Right Co-ords)")
-      return false
+    let plateauSize = [...this.state.upperRightCoords]
+    instructions.forEach(move => {
+      if (move === "L" || move === "R") {
+        roverPosition[2] = API.turnRover(move, roverPosition)
+      } else if (move === "M") {
+        roverPosition = API.moveRover(roverPosition[2], roverPosition, plateauSize, roverIndex)
+      }
+    })
+    return roverPosition
+  }
+
+  //changes the output into a string (as required)
+  formatOutput = (roversPositions) => {
+    let formattedOutput = ""
+
+    if (roversPositions) {
+      formattedOutput = roversPositions.map(roverPosition =>
+        roverPosition.join(" ")
+      )
+      formattedOutput = formattedOutput.join("\n")
+      console.log(formattedOutput)
     }
+    this.setState({ formattedOutput: formattedOutput })
   }
 
 
   render() {
-    // this.formatOutput(this.state.roversPositions)
-    // let formattedOutput = this.state.formattedOutput ? [...this.state.formattedOutput] : null
     let formattedOutput = this.state.formattedOutput
-
 
     return (
       <div className="App">
@@ -188,19 +182,5 @@ class App extends React.Component {
   }
 }
 
-
 export default App;
 
-// createPlateau = () => {
-//   let plateau = []
-//   let columns = this.state.upperRightCoords[1]
-//   let rows = this.state.upperRightCoords[0]
-//   for (let i = 0; i < columns; i++) {
-//     plateau[i] = []
-//     for (let j = 0; j < rows; j++) {
-//       plateau[i][j] = 0
-//     }
-//   }
-//   this.setState({ plateauArray: plateau })
-//   console.log("here is the plateau", plateau)
-// }
