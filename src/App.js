@@ -39,7 +39,7 @@ class App extends React.Component {
     })
     this.setState(
       { roversPositions: roversPositions },
-      () => this.formatOutput())
+      () => this.formatOutput(roversPositions))
   }
 
   formatOutput = (roversPositions) => {
@@ -153,7 +153,9 @@ class App extends React.Component {
 
 
   render() {
-    let formattedOutput = this.state.formattedOutput ? [...this.state.formattedOutput] : null
+    // this.formatOutput(this.state.roversPositions)
+    // let formattedOutput = this.state.formattedOutput ? [...this.state.formattedOutput] : null
+    let formattedOutput = this.state.formattedOutput
 
 
     return (
