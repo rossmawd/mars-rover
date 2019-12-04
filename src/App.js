@@ -153,32 +153,14 @@ class App extends React.Component {
         >
         </textarea>
         <br />
-        {/* <label for="Ycoord" align="right">Y Coordinnate of upper right hand corner of plateau: </label>
-        <input
-          type="text"
-          id="Ycoord"
-          name="upperRightYcoord"
-          placeholder="e.g: 5"
-          align="right"
-          onChange={this.handleFormChange}
-          value={this.state.upperRightYcoord}
-        >
-        </input> */}
 
-        <br />
-        {/* <label for="rovers" align="right">Number of Rovers: </label>
-        <input
-          type="text"
-          id="rovers"
-          name="numberOfRovers"
-          align="right"
-          placeholder="e.g: 2"
-          onChange={this.handleFormChange}
-          value={this.state.numberOfRovers}
-        >
-        </input> */}
-        <br />
         <button onClick={this.handleInputSubmit}>Submit</button>
+        <br></br>
+
+        {this.state.roversPositions ? <div>
+          <p><b>Results:  </b> {this.state.roversPositions.join(' ')}</p>
+        </div> : null}
+
       </div >
     );
   }
