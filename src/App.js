@@ -6,8 +6,8 @@ class App extends React.Component {
   state = {
     upperRightCoords: null,
     numberOfRovers: null,
-    roversCoords: null,
-    roverIntructions: null,
+    roversPositions: null,
+    roversInstructions: null,
     plateauArray: []
   }
 
@@ -22,14 +22,34 @@ class App extends React.Component {
     inputArray = inputArray.filter(line => line !== "")
     if (this.processInputs(inputArray)) {
       console.log("Inputs Sucessfully Processed!")
-      // this.calculateRoverEndpoint()
+      // this.calculateRoverEndpoints()
     }
   }
 
-  calculateRoverEndpoint = (coords, instructions) => {
+  calculateRoverEndpoints = () => {
+    let { roversInstructions, roversPositions } = this.state
     console.log("calculating endpoint:")
-    console.log(coords, instructions)
+    console.log("coords:", roversPositions, "instructions:", roversInstructions)
+
+    roversInstructions.forEach((instructionSet, index) => {
+      this.driveRover(instructionSet, index)
+    })
   }
+
+  driveRover = (instructions, roverIndex) => {
+    let roverPosition = [...this.state.roversPositions[roverIndex]]
+    let currentDirection = null
+    let plateauSize = [...this.state.upperRightCoords]
+    instructions.forEach(move => {
+      if (move === "L" || move === "R") {
+        currentDirection = API.turnRover("L", roverPosition)
+      } else if (move === "M") {
+        API.moveRover(currentDirection, roverPosition, plateauSize)
+      }
+    })
+  }
+
+
 
   processInputs = (inputs) => {
     if (inputs.length % 2 === 0) {
@@ -48,43 +68,31 @@ class App extends React.Component {
   }
 
   saveRoverDataToState = (roverData) => {
-    let [roversCoords, roversIntructions] = [[], []]
+    let [roversPositions, roversInstructions] = [[], []]
 
     roverData.forEach((rover, index) => {
       // Validate rover coordinates
       if (rover[0].length !== 3) {
         alert(`invalid coordinates for Rover ${index}`)
       } else {
-        //create new array, roversCoords, soley for all coordinates
-        roversCoords.push([])
-        roversCoords[index].push(
+        //create new array, roversPositions, soley for all coordinates
+        roversPositions.push([])
+        roversPositions[index].push(
           parseInt(rover[0][0]), parseInt(rover[0][1]), rover[0][2]
         )
-        roversIntructions.push(rover[1])
+        roversInstructions.push(rover[1])
       }
     }
     )
     this.setState({
-      roversCoords: roversCoords,
-      roversIntructions: roversIntructions
+      roversPositions: roversPositions,
+      roversInstructions: roversInstructions
     },
-      () => this.calculateRoverEndpoint(this.state.roversCoords, this.state.roversIntructions)
+      () => this.calculateRoverEndpoints()
     )
   }
 
-  createPlateau = () => {
-    let plateau = []
-    let columns = this.state.upperRightCoords[1]
-    let rows = this.state.upperRightCoords[0]
-    for (let i = 0; i < columns; i++) {
-      plateau[i] = []
-      for (let j = 0; j < rows; j++) {
-        plateau[i][j] = 0
-      }
-    }
-    this.setState({ plateauArray: plateau })
-    console.log("here is the plateau", plateau)
-  }
+
 
   splitRoverData = (inputs) => {
     let indexedRoverData = []
@@ -116,7 +124,7 @@ class App extends React.Component {
         upperRightCoords: API.convertStringsArrayToIntegers(upperRightCoords)
       },
         () => {
-          this.createPlateau()
+          // this.createPlateau()
           console.log("the upper Right Co-ords: ", this.state.upperRightCoords)
         })
     } else {
@@ -172,4 +180,19 @@ class App extends React.Component {
   }
 }
 
+
 export default App;
+
+// createPlateau = () => {
+//   let plateau = []
+//   let columns = this.state.upperRightCoords[1]
+//   let rows = this.state.upperRightCoords[0]
+//   for (let i = 0; i < columns; i++) {
+//     plateau[i] = []
+//     for (let j = 0; j < rows; j++) {
+//       plateau[i][j] = 0
+//     }
+//   }
+//   this.setState({ plateauArray: plateau })
+//   console.log("here is the plateau", plateau)
+// }
