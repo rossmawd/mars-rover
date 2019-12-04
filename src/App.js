@@ -8,7 +8,8 @@ class App extends React.Component {
     numberOfRovers: null,
     roversPositions: null,
     roversInstructions: null,
-    plateauArray: []
+    formattedOutput: null
+
   }
 
   handleFormChange = (e) => {
@@ -36,7 +37,20 @@ class App extends React.Component {
       let newPosition = this.driveRover(instructionSet, index)
       roversPositions[index] = newPosition
     })
-    this.setState({ roversPositions: roversPositions })
+    this.setState(
+      { roversPositions: roversPositions },
+      () => this.formatOutput())
+  }
+
+  formatOutput = (roversPositions) => {
+
+    let formattedOutput = ""
+    if (roversPositions) {
+      formattedOutput = roversPositions.map(roverPosition => roverPosition.join(" "))
+      formattedOutput = formattedOutput.join("\n")
+      console.log(formattedOutput)
+    }
+    this.setState({ formattedOutput: formattedOutput })
   }
 
   driveRover = (instructions, roverIndex) => {
@@ -139,6 +153,9 @@ class App extends React.Component {
 
 
   render() {
+    let formattedOutput = this.state.formattedOutput ? [...this.state.formattedOutput] : null
+
+
     return (
       <div className="App">
         <label for="Xcoord" align="right">Enter Test input: </label>
@@ -156,9 +173,12 @@ class App extends React.Component {
 
         <button onClick={this.handleInputSubmit}>Submit</button>
         <br></br>
+        <span> --- </span>
 
-        {this.state.roversPositions ? <div>
-          <p><b>Results:  </b> {this.state.roversPositions.join(' ')}</p>
+        {this.state.formattedOutput ? <div>
+          {/* <p><b>Results:  </b> {outputString}</p> */}
+          <label for="results">Output:  </label>
+          <textarea id="results">{formattedOutput}</textarea>
         </div> : null}
 
       </div >
