@@ -7,7 +7,8 @@ class App extends React.Component {
     upperRightCoords: null,
     roversPositions: null,
     roversInstructions: null,
-    formattedOutput: null
+    formattedOutput: null,
+    input: null
   }
 
   handleFormChange = (e) => {
@@ -17,10 +18,12 @@ class App extends React.Component {
   }
 
   handleInputSubmit = () => {
-    let inputArray = this.state.upperRightXcoord.split('\n')
-    inputArray = inputArray.filter(line => line !== "")
-    this.processInputs(inputArray)
-    this.setState({ formatOutput: null })
+    if (this.state.input) {
+      let inputArray = this.state.input.split('\n')
+      inputArray = inputArray.filter(line => line !== "")
+      this.processInputs(inputArray)
+      this.setState({ formatOutput: null })
+    }
   }
 
   processInputs = (inputs) => {
@@ -151,18 +154,23 @@ class App extends React.Component {
 
   render() {
     let formattedOutput = this.state.formattedOutput
+    let sampleInput = "5 5\n1 2 N\nLMLMLMLMM \n3 3 E\nMMRMMRMRRM"
 
     return (
       <div className="App">
-        <label for="Xcoord" align="right">Enter Test input: </label>
+        <label for="sample">Given Sample Input: </label>
+        <textarea id="sample" value={sampleInput} rows="6"></textarea>
+        <br></br>
+        <label for="input" >Please Enter Test input: </label>
         <textarea
           type="text"
-          id="Xcoord"
-          name="upperRightXcoord"
+          rows="6"
+          id="input"
+          name="input"
           placeholder="e.g: 5"
-          align="right"
+
           onChange={this.handleFormChange}
-          value={this.state.upperRightXcoord}
+          value={this.state.input}
         >
         </textarea>
         <br />
