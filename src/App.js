@@ -27,26 +27,30 @@ class App extends React.Component {
   }
 
   calculateRoverEndpoints = () => {
-    let { roversInstructions, roversPositions } = this.state
+    let roversInstructions = [...this.state.roversInstructions]
+    let roversPositions = [...this.state.roversPositions]
     console.log("calculating endpoint:")
-    console.log("coords:", roversPositions, "instructions:", roversInstructions)
+    // console.log("coords:", roversPositions, "instructions:", roversInstructions)
 
     roversInstructions.forEach((instructionSet, index) => {
-      this.driveRover(instructionSet, index)
+      let newPosition = this.driveRover(instructionSet, index)
+      roversPositions[index] = newPosition
     })
+    this.setState({ roversPositions: roversPositions })
   }
 
   driveRover = (instructions, roverIndex) => {
     let roverPosition = [...this.state.roversPositions[roverIndex]]
-    let currentDirection = null
+
     let plateauSize = [...this.state.upperRightCoords]
     instructions.forEach(move => {
       if (move === "L" || move === "R") {
-        currentDirection = API.turnRover("L", roverPosition)
+        roverPosition[2] = API.turnRover(move, roverPosition)
       } else if (move === "M") {
-        API.moveRover(currentDirection, roverPosition, plateauSize)
+        roverPosition = API.moveRover(roverPosition[2], roverPosition, plateauSize, roverIndex)
       }
     })
+    return roverPosition
   }
 
 
