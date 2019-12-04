@@ -7,8 +7,6 @@ class App extends React.Component {
     upperRightCoords: null,
     numberOfRovers: null,
     roversStartCoords: null,
-    movementInstructions: "",
-    testInput: "",
     plateauArray: []
   }
 
@@ -35,8 +33,19 @@ class App extends React.Component {
       let upperRightCoords = inputs.shift().split(' ')
       this.validateAndProcessFirstLine(upperRightCoords)
 
-      this.splitRoverData(inputs)
+      let roverData = this.splitRoverData(inputs)
+      this.saveRoverDataToState(roverData)
     }
+  }
+
+  saveRoverDataToState = (roverData) => {
+    roverData.forEach((rover, index) => {
+      if (rover[0].length !== 3) {
+        alert(`invalid coordinates for Rover ${index}`)
+      } else {
+
+      }
+    })
   }
 
   createPlateau = () => {
@@ -58,15 +67,19 @@ class App extends React.Component {
     //put each rover's data into its own array inside an array
     let i = 0
     let j = 0
-
     do {
       indexedRoverData[j] = [inputs[i], inputs[i + 1]]
       i = i + 2
       j++
     } while (i !== (inputs.length))
+    //put each character string into its own array element
+    indexedRoverData = indexedRoverData.map(roverArray => {
+      return roverArray.map(string => string.replace(/ /g, '').split(''))
+    })
     console.log("the indexed rover data is", indexedRoverData)
-
+    // final array form: [ [[1,2,N],[L,M,R,M]] , [[2,3,S],[L,M,L,M]] ]
     console.log("Number of rovers", indexedRoverData.length)
+    return indexedRoverData
   }
 
   // checks the first input line is 2 integers seperated by a space
